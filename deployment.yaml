@@ -1,33 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: testgo-deployment
+  name: webserver-deployment
   labels:
-    app: testgo
+    app: webserver
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: testgo
+      app: webserver
   template:
     metadata:
       labels:
-        app: testgo
+        app: webserver
     spec:
       containers:
-      - name: testgo
-        image: testgo:1.0
-        imagePullPolicy: Never
+      - name: webserver
+        image: mywebserver:1.0
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
+        volumeMounts:
+        - name: webserver-secret # References the name of the volume specified below
+          mountPath: "/var/secret"
+          readOnly: true
+      volumes:
+        - name: webserver-secret
+          secret:
+            secretName: webserver-secret # References the secret name from step 1
+            optional: false
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: testgo-service
+  name: webserver-service
 spec:
   selector:
-    app: testgo
+    app: webserver
   ports:
     - port: 80
       targetPort: 3000
