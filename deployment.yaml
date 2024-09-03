@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testgo-deployment
+  labels:
+    app: testgo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testgo
+  template:
+    metadata:
+      labels:
+        app: testgo
+    spec:
+      containers:
+      - name: testgo
+        image: testgo:1.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testgo-service
+spec:
+  selector:
+    app: testgo
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
